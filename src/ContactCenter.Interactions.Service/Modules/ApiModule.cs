@@ -12,7 +12,6 @@ public class ApiModule : IModule, IApplicationModule
         services.AddSwaggerGen(genOptions =>
         {
             genOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "Interactions Service V1", Version = "v1" });
-            genOptions.SwaggerDoc("v2", new OpenApiInfo { Title = "Interactions Service V2", Version = "v2" });
         });
 
         services.AddHttpLogging(_ => { });
@@ -24,7 +23,6 @@ public class ApiModule : IModule, IApplicationModule
         app.UseSwaggerUI(uiOptions =>
         {
             uiOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-            uiOptions.SwaggerEndpoint("/swagger/v2/swagger.json", "v2");
         });
 
         app.UseHttpLogging();
@@ -33,5 +31,8 @@ public class ApiModule : IModule, IApplicationModule
         {
             app.UseExceptionHandler("/Error");
         }
+
+        app.UseRouting();
+        app.MapControllers();
     }
 }

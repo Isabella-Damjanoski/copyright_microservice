@@ -42,13 +42,6 @@
     <PackageReference Include="ServiceTitan.AccountService.Client.Api" />
     <PackageReference Include="ServiceTitan.ContactCenter.Platform.Access" />
     <PackageReference Include="ServiceTitan.ContactCenter.STApi" />
-    <PackageReference Include="ServiceTitan.Platform.Diagnostics" />
-    <PackageReference Include="ServiceTitan.Platform.Diagnostics.AspNetCore" />
-    <PackageReference Include="ServiceTitan.Platform.Diagnostics.OpenTelemetry" />
-    <PackageReference Include="ServiceTitan.Platform.Diagnostics.Prometheus" />
-    <PackageReference Include="ServiceTitan.Platform.PubSub" />
-    <PackageReference Include="ServiceTitan.Platform.PubSub.Extensions.OpenTelemetry" />
-    <PackageReference Include="ServiceTitan.Platform.PubSub.Kafka" />
     <PackageReference Include="NSwag.MSBuild">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -61,9 +54,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Using Include="ServiceTitan.Platform.Diagnostics" />
-    <Using Remove="Microsoft.Extensions.Logging" />
-  </ItemGroup>
+  <!-- Restore standard .NET logging -->
 
 </Project>

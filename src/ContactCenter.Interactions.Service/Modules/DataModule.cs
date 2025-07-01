@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using ServiceTitan.ContactCenter.Interactions.Service.Data;
 using ServiceTitan.ContactCenter.Interactions.Service.Data.Repositories;
@@ -17,9 +18,9 @@ public class DataModule : IModule
             var connectionString = configuration.GetValue<string>("MongoDbConnectionString");
             var databaseName = configuration.GetValue<string>("MongoDbDatabase");
             var logger = serviceProvider.GetRequiredService<ILogger<DataModule>>();
-            logger.Info(
-                "Initializing MongoDb database.",
-                d => d.SetData(new { MongoDbConnectionString = connectionString, MongoDbDatabase = databaseName })
+            logger.LogInformation(
+                "Initializing MongoDb database with ConnectionString: {ConnectionString}, Database: {Database}",
+                connectionString, databaseName
             );
             var mongoClient = new MongoClient(connectionString);
             return mongoClient.GetDatabase(databaseName);
