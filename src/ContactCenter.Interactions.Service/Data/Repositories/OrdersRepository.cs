@@ -21,6 +21,7 @@ public class OrdersRepository(
     {
         order.CreatedAt = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
         order.UpdatedAt = order.CreatedAt;
+        order.Status = 1;
         await _ordersCollection.InsertOneAsync(order);
         return order;
     }
