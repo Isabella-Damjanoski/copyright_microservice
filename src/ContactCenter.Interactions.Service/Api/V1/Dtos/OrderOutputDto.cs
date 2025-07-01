@@ -7,4 +7,6 @@ public record OrderOutputDto
     public required DateTime CreatedAt { get; set; }
 
     public required DateTime UpdatedAt { get; set; }
+
+    public required int Status { get; set; }
 }

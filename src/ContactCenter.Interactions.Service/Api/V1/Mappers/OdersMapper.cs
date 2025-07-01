@@ -11,6 +11,7 @@ public static class OrdersMapper
             Id = order.Id,
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
+            Status = order.Status ?? default(int)
         };
     }
 
@@ -22,6 +23,7 @@ public static class OrdersMapper
             Id = Guid.NewGuid().ToString(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
+            Status = null
             // Map other properties from orderCreateDto as needed
         };
     }
