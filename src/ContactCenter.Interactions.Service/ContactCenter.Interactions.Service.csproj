@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <RootNamespace>ServiceTitan.ContactCenter.Interactions.Service</RootNamespace>
-    <AssemblyName>ServiceTitan.ContactCenter.Interactions.Service</AssemblyName>
     <Version>1.0.0</Version>
   </PropertyGroup>
 
@@ -39,14 +37,10 @@
     <PackageReference Include="Refit" />
     <PackageReference Include="Refit.HttpClientFactory" />
     <PackageReference Include="Scrutor" />
-    <PackageReference Include="ServiceTitan.AccountService.Client.Api" />
-    <PackageReference Include="ServiceTitan.ContactCenter.Platform.Access" />
-    <PackageReference Include="ServiceTitan.ContactCenter.STApi" />
     <PackageReference Include="NSwag.MSBuild">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="ServiceTitan.Telecom.Transcription.Client" />
     <PackageReference Include="StyleCop.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

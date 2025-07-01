@@ -3,7 +3,6 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <AspNetCoreVersion>8.0.8</AspNetCoreVersion>
     <OpenTelemetryVersion>1.9.0</OpenTelemetryVersion>
-    <ServiceTitanPlatformVersion>3.72.14</ServiceTitanPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AutoFixture" Version="4.18.1" />
@@ -44,17 +43,6 @@
     <PackageVersion Include="Refit" Version="8.0.0" />
     <PackageVersion Include="Refit.HttpClientFactory" Version="8.0.0" />
     <PackageVersion Include="Scrutor" Version="5.0.1" />
-    <PackageVersion Include="ServiceTitan.AccountService.Client.Api" Version="0.1.104" />
-    <PackageVersion Include="ServiceTitan.ContactCenter.STApi" Version="1.0.18" />
-    <PackageVersion Include="ServiceTitan.ContactCenter.Platform.Access" Version="1.0.13" />
-    <PackageVersion Include="ServiceTitan.Platform.Diagnostics" Version="$(ServiceTitanPlatformVersion)" />
-    <PackageVersion Include="ServiceTitan.Platform.Diagnostics.AspNetCore" Version="$(ServiceTitanPlatformVersion)" />
-    <PackageVersion Include="ServiceTitan.Platform.Diagnostics.OpenTelemetry" Version="$(ServiceTitanPlatformVersion)" />
-    <PackageVersion Include="ServiceTitan.Platform.Diagnostics.Prometheus" Version="$(ServiceTitanPlatformVersion)" />
-    <PackageVersion Include="ServiceTitan.Platform.PubSub" Version="$(ServiceTitanPlatformVersion)" />
-    <PackageVersion Include="ServiceTitan.Platform.PubSub.Extensions.OpenTelemetry" Version="$(ServiceTitanPlatformVersion)" />
-    <PackageVersion Include="ServiceTitan.Platform.PubSub.Kafka" Version="$(ServiceTitanPlatformVersion)" />
-    <PackageVersion Include="ServiceTitan.Telecom.Transcription.Client" Version="1.47.4" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.8.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
