@@ -1,5 +1,0 @@
-# Metadata about the service in this repository.
-service:
-  name: contactcenter-interactions-service
-  aad: ./aad.yaml
-  tf: ./tf/

@@ -1,4 +1,0 @@
-dist
-node_modules/
-k6.env.json
-summary*

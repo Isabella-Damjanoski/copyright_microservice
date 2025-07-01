@@ -1,5 +1,0 @@
-* @servicetitan/contactcenter
-
-/src/ContactCenter.Interactions.Service/Data/MongoDocuments @servicetitan/contactcenter-mongodb
-/src/ContactCenter.Interactions.Service/Data/Repositories @servicetitan/contactcenter-mongodb
-/src/ContactCenter.Interactions.Service/Modules/Migrations @servicetitan/contactcenter-mongodb
