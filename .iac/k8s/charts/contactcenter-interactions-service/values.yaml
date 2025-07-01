@@ -1,0 +1,43 @@
+# Will be overwritten by Flux
+subscription:
+  key: set-by-flux
+  id: set-by-flux
+environment:
+  name: set-by-flux
+  innerKvName: set-by-flux
+stamp:
+  name: set-by-flux
+amiClientId: set-by-flux
+
+serviceGroup:
+  name: contactcenter
+service:
+  name: contactcenter-interactions-service
+  image:
+    repo: set-by-flux.azurecr.io # set by Flux
+    name: contactcenter-interactions-service
+    version: 'app_version_replace' # set by GH Actions
+  port: 8080
+ingress:
+  subdomain: interactions
+
+pdb:
+  maxUnavailable: 1
+
+hpa:
+  minReplicas: 3
+  maxReplicas: 15
+  targetMemoryUtilizationPercentage: 70
+  targetCpuUtilizationPercentage: 60
+  # Scale Up -- Allow 30% more pods every 30 seconds
+  scaleUp:
+    type: Percent
+    amount: 30
+    periodSeconds: 30
+    stabilizationWindowSeconds: 30
+    # Scale Down -- Allow 1 less pod every 60 seconds
+  scaleDown:
+    type: Pods
+    amount: 1
+    periodSeconds: 60
+    stabilizationWindowSeconds: 300

@@ -1,0 +1,121 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: prometheus-operator
+    role: alert-rules
+    release: prometheus-operator
+  name: interactions-resource-alert-rules
+spec:
+  groups:
+    - name: interactions-resource-alerts
+      rules:        
+        - alert: MemoryUsageHigh
+          expr: (max(container_memory_working_set_bytes{container="contactcenter-interactions-service"}) by (cluster, namespace, pod, platz_stamp) / max(kube_pod_container_resource_requests_memory_bytes{container="contactcenter-interactions-service"}) by (cluster, namespace, pod, platz_stamp)) >= 0.6
+          for: 5m
+          labels:
+            severity: warning
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value | humanizePercentage}}" }} memory usage for the last 5m'
+            description: 'Memory usage is High: >= 60% in {{ "{{$labels.platz_stamp}}" }} for pod {{ "{{$labels.pod}}" }}'
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ
+
+        - alert: MemoryUsageCriticallyHigh
+          expr: (sum(rate(container_cpu_usage_seconds_total{container="contactcenter-interactions-service"}[1m])) by (cluster, namespace, pod, platz_stamp) / max(kube_pod_container_resource_requests_cpu_cores{container="contactcenter-interactions-service"}) by (cluster, namespace, pod, platz_stamp)) >= 0.8
+          for: 5m
+          labels:
+            severity: critical
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value | humanizePercentage}}" }} memory usage for the last 5m'
+            description: 'Memory usage is Critically High: >= 80% in {{ "{{$labels.platz_stamp}}" }} for pod {{ "{{$labels.pod}}" }}'
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ
+
+        - alert: CPUUsageHigh
+          expr: (sum(rate(container_cpu_usage_seconds_total{container="contactcenter-interactions-service"}[1m])) by (cluster, namespace, pod, platz_stamp) / max(kube_pod_container_resource_requests_cpu_cores{container="contactcenter-interactions-service"}) by (cluster, namespace, pod, platz_stamp)) >= 0.6
+          for: 5m
+          labels:
+            severity: warning
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value | humanizePercentage}}" }} CPU usage for the last 5m'
+            description: 'CPU usage is High: >= 60% in {{ "{{$labels.platz_stamp}}" }} for pod {{ "{{$labels.pod}}" }}'
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ
+
+        - alert: CPUUsageCriticallyHigh
+          expr: (sum(rate(container_cpu_usage_seconds_total{container="contactcenter-interactions-service"}[1m])) by (pod, platz_stamp) / max(kube_pod_container_resource_limits_cpu_cores{container="contactcenter-interactions-service"}) by (pod, platz_stamp)) >= 0.8
+          for: 5m
+          labels:
+            severity: critical
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value | humanizePercentage}}" }} CPU usage for the last 5m'
+            description: 'CPU usage is Critically High: >= 80% in {{ "{{$labels.platz_stamp}}" }} for pod {{ "{{$labels.pod}}" }}'
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ
+
+        - alert: PodCountHigh
+          expr: (max(kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler="contactcenter-interactions-service"}) by (cluster, namespace, platz_stamp) / max(kube_horizontalpodautoscaler_spec_max_replicas{horizontalpodautoscaler="contactcenter-interactions-service"}) by (cluster, namespace, platz_stamp)) >= 0.6
+          for: 5m
+          labels:
+            severity: warning
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value | humanizePercentage}}" }} of maximum pod count for the last 5m'
+            description: 'Pod count is High: >= 60% in {{ "{{$labels.platz_stamp}}" }}'
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ
+
+        - alert: PodCountCriticallyHigh
+          expr: (max(kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler="contactcenter-interactions-service"}) by (cluster, namespace, platz_stamp) / max(kube_horizontalpodautoscaler_spec_max_replicas{horizontalpodautoscaler="contactcenter-interactions-service"}) by (cluster, namespace, platz_stamp)) >= 0.8
+          for: 0s
+          labels:
+            severity: critical
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value | humanizePercentage}}" }} of maximum pod count'
+            description: 'Pod count is Critically High: >= 80% in {{ "{{$labels.platz_stamp}}" }}'
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ
+
+        - alert: ErrorRateHigh
+          expr: rate(st_logging_events_total{container="contactcenter-interactions-service", level="Error", exception_type!=""}[1m]) >= 0.02
+          for: 5m
+          labels:
+            severity: warning
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value}}" }} {{ "{{$labels.exception_type}}" }} Exception rate for the last 5m'
+            description: "Exception Rate High: > 1 per minute for the last 5 minutes"
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ
+
+        - alert: ErrorRateCritical
+          expr: (rate(st_logging_events_total{metadata_component="contactcenter-interactions-service",exception_type!="", level="Error"}[1m]) * 60) >= 60
+          for: 1m
+          labels:
+            severity: critical
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value}}" }} {{ "{{$labels.exception_type}}" }} Exception rate per minute in the last 1m'
+            description: 'Exception Rate Critically High: >= 60 per minute'
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ
+
+        - alert: ThreadPoolQueueLengthHigh
+          expr: (rate(dotnet_threadpool_queue_length_sum{metadata_component="contactcenter-interactions-service"}[1m]) / (rate(dotnet_threadpool_queue_length_count{metadata_component="contactcenter-interactions-service"}[1m]))) > 0.5
+          for: 1m
+          labels:
+            severity: warning
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value}}" }} Thread Pool Queue Length in last 1m'
+            description: 'Thread Pool Queue Length > 0.5 in past minute'
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ
+
+        - alert: ThreadPoolQueueLengthCritical
+          expr: (rate(dotnet_threadpool_queue_length_sum{metadata_component="contactcenter-interactions-service"}[1m]) / (rate(dotnet_threadpool_queue_length_count{metadata_component="contactcenter-interactions-service"}[1m]))) > 0.5
+          for: 15m
+          labels:
+            severity: critical
+            team: contactcenter
+          annotations:
+            summary: '{{ "{{$value}}" }} Thread Pool Queue Length Critical in last 15m'
+            description: 'Thread Pool Queue Length > 0.5 for past 15 minutes'
+            runbook_url: https://servicetitan.atlassian.net/wiki/x/CYHruQ

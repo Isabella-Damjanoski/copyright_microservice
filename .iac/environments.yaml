@@ -1,0 +1,9 @@
+serviceGroup:
+  repo:
+    uri: git@github.com:servicetitan/contactcenter-shared-iac.git
+
+# Metadata about the service in this repository.
+service:
+  name: contactcenter-interactions-service
+  aad: ./aad.yaml
+  tf: ./tf/

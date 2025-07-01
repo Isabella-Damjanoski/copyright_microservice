@@ -1,0 +1,79 @@
+name: Run tests and publish coverage
+
+on: [push]
+
+jobs:
+  build-test-coverage:
+    name: Run tests and publish coverage
+    runs-on: ubuntu-22.04
+    env:
+      ST__NuGetKey: ${{ secrets.ST_NUGET_PASSWORD }}
+      MongoDbConnectionString: "mongodb://localhost:27017/test?replicaSet=rs-localdev"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Setup Kafka
+        uses: 280780363/kafka-action@v1.0
+        with: 
+          kafka version: 3.9
+
+      # Special mongodb image with atlas search and rs-localdev replica set
+      - name: Setup Mongo
+        run: |
+          docker run --name test-mongo --publish 27017:27017 --detach mongodb/mongodb-atlas-local:7.0
+          echo 'MongoDB started.'
+
+      - name: Restore .NET tools
+        run: |
+          dotnet tool restore
+          echo "$PWD/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Restore NuGet packages
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build
+
+      - name: Run tests
+        run: dotnet test --collect:"XPlat Code Coverage" --results-directory:"artifacts/tests/coverage" --settings:'coverage.runsettings'
+
+      - name: Move Coverage Report
+        run: mv artifacts/tests/coverage/**/coverage.cobertura.xml artifacts/tests/coverage/coverage.cobertura.xml
+
+      - name: Generate Html & GitHub Coverage Report
+        run: |
+          mkdir -p artifacts/tests/coverage/report
+          dotnet reportgenerator -reports:'artifacts/tests/coverage/coverage.cobertura.xml' -targetdir:'artifacts/tests/coverage/report' -reporttypes:'Html_Dark;MarkdownSummaryGithub'
+
+      - name: Publish Coverage
+        run: dotnet platform-build publish-coverage
+          --coverage-report-relative-path "artifacts/tests/coverage/coverage.cobertura.xml"
+          --coverage-version "1.0.0"
+          --coverage-app-url "https://backend-platform-coverage.azurewebsites.net/"
+          --coverage-app-key "${{ secrets.ST_BUILD_TOOL_COVERAGE_APP_KEY }}"
+          --coverage-project-name "contactcenter-interactions-service"
+          --coverage-test-type "backend"
+          --coverage-default-owner "contactcenter"
+          --coverage-branch-type "dev"
+
+      - name: Replace slashes in branch name
+        run: |
+          GITHUB_REF_NAME=${{ github.ref_name }}
+          GITHUB_REF_NAME=${GITHUB_REF_NAME//\//_}
+          echo "GITHUB_REF_NAME=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccp-interactions-service-coverage-report-${{ env.GITHUB_REF_NAME }}
+          path: artifacts/tests/coverage/report/
+          retention-days: 5
+
+      - name: Publish coverage in build summary
+        run: cat artifacts/tests/coverage/report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY

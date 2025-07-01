@@ -1,0 +1,28 @@
+name: CSharpier Format Check
+
+on:
+  pull_request:
+
+jobs:
+  csharpier-format-check:
+    runs-on: ubuntu-22.04
+    env:
+      ST__NuGetKey: ${{ secrets.ST_NUGET_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore .NET tools
+        run: |
+          dotnet tool restore
+          echo "$PWD/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: CSharpier Format Check
+        run: dotnet csharpier --check .

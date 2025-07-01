@@ -1,0 +1,52 @@
+name: k6 Load Test
+
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to run the tests against"
+        required: true
+        default: "qa"
+        type: "choice"
+        options:
+          - qa
+      workload:
+        description: "Type of workload to run"
+        required: true
+        default: "smoke"
+        type: "choice"
+        options:
+          - smoke
+          - average
+          - stress
+      concurrency:
+        description: "Number of concurrent virtual users. If empty, will use workload to determine."
+        required: false
+        type: "number"
+      iterations:
+        description: "Number of iterations per virtual user. If empty, will use workload to determine."
+        required: false
+        type: "number"
+      duration:
+        description: "Max duration of the test formatted as '1s'. If empty, will run through all iterations."
+        required: false
+        type: "string"
+      test-name: 
+        description: "Name of the k6 test to run. This should match the test filename without the extension."
+        required: true
+        default: "v2Api"
+        type: "string"
+
+jobs:
+  k6-load-test:
+    name: Run k6 tests on ${{ github.event.inputs.environment || 'qa' }}
+    uses: ./.github/workflows/k6-reusable.yml
+    secrets: inherit
+    with:
+      environment: ${{ github.event.inputs.environment || 'qa' }}
+      workload: ${{ github.event.inputs.workload || 'smoke' }}
+      path: "./.performance/src/tests/${{ github.event.inputs.test-name || '*' }}.ts"
+      concurrency: ${{ github.event.inputs.concurrency || 0 }}
+      iterations: ${{ github.event.inputs.iterations || 0 }}
+      duration: "${{ github.event.inputs.duration }}"

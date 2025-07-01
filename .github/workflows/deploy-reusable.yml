@@ -1,0 +1,83 @@
+name: "Build and Push"
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      stamps:
+        required: true
+        type: string
+
+jobs:
+  get-tag:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Get tag
+        id: tag
+        uses: servicetitan/contactcenter-shared-iac/actions/get-tag@master
+        with:
+          ref-type: ${{ github.ref_type }}
+          ref-name: ${{ github.ref_name }}
+          commit-sha: ${{ github.sha }}
+    outputs:
+      type: ${{ steps.tag.outputs.type }}
+      value: ${{ steps.tag.outputs.value }}
+
+  docker-build-push:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    permissions: write-all
+    needs: get-tag
+    steps:
+      - name: Build and push docker image
+        uses: servicetitan/contactcenter-shared-iac/actions/docker-build-push@master
+        with:
+          image-name: contactcenter-interactions-service
+          image-tag: ${{ needs.get-tag.outputs.value }}
+          build-args: ST__NuGetKey=${{ secrets.ST_NUGET_PASSWORD }}
+          az-subscription-id: ${{ vars.ENV_SUBSCRIPTIONID }}
+          az-client-id: ${{ secrets.ENV_DEPLOY_CLIENTID }}
+          environment: ${{ inputs.environment }}
+
+  helm-package-push:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    permissions: write-all
+    needs: get-tag
+    steps:
+      - name: Package and push Helm chart
+        uses: servicetitan/contactcenter-shared-iac/actions/helm-build-push@master
+        with:
+          chart-name: contactcenter-interactions-service
+          service-version: ${{ needs.get-tag.outputs.value }}
+          chart-path: .iac/k8s/charts/contactcenter-interactions-service
+          az-subscription-id: ${{ vars.ENV_SUBSCRIPTIONID }}
+          az-client-id: ${{ secrets.ENV_DEPLOY_CLIENTID }}
+          environment: ${{ inputs.environment }}
+
+  deploy:
+    needs: [get-tag, docker-build-push, helm-package-push]
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.environment }}
+    permissions: write-all
+    strategy:
+      max-parallel: 1
+      fail-fast: true
+      matrix:
+        stamp: ${{ fromJSON(inputs.stamps) }}
+    steps:
+      - name: Deploy
+        uses: servicetitan/contactcenter-shared-iac/actions/deploy@master
+        env:
+          MONGODB_ATLAS_PUBLIC_KEY: ${{ secrets.MONGODB_ATLAS_PUBLIC_KEY }}
+          MONGODB_ATLAS_PRIVATE_KEY: ${{ secrets.MONGODB_ATLAS_PRIVATE_KEY }}
+        with:
+          version: ${{ needs.get-tag.outputs.value }}
+          environment: ${{ inputs.environment }}
+          stamp: ${{ matrix.stamp }}
+          gh-app-id: ${{ vars.ST_INFRA_PLATFORM_APP_ID }}
+          gh-app-secret: ${{ secrets.ST_INFRA_PLATFORM_APP_SECRET }}
+          az-subscription-id: ${{ vars.ENV_SUBSCRIPTIONID }}
+          az-client-id: ${{ secrets.ENV_DEPLOY_CLIENTID }}
+          infra-iac-deploy-key: ${{ secrets.ST_INFRA_IAC_DEPLOY_KEY }}

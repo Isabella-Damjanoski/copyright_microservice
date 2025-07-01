@@ -1,0 +1,22 @@
+{
+  "runtime": "Net90",
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "https://localhost:8001/swagger/v1/swagger.json"
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "className": "VaServiceClient",
+      "generateClientInterfaces": true,
+      "injectHttpClient": true,
+      "generatePrepareRequestAndProcessResponseAsAsyncMethods": false,
+      "generateNativeRecords": true,
+      "operationGenerationMode": "SingleClientFromPathSegments",
+      "namespace": "ServiceTitan.ContactCenter.Interactions.Service.Data.ApiClients.Va",
+      "jsonLibrary": "SystemTextJson",
+      "useNullableReferenceTypes": true,
+      "output": "../src/ContactCenter.Interactions.Service/Data/ApiClients/Va/VaServiceClient.generated.cs",
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "runtime": "Net90",
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "http://localhost:5297/swagger/v1/swagger.json"
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "className": "UserServiceClient",
+      "generateClientInterfaces": true,
+      "injectHttpClient": true,
+      "generatePrepareRequestAndProcessResponseAsAsyncMethods": false,
+      "generateNativeRecords": true,
+      "operationGenerationMode": "SingleClientFromPathSegments",
+      "namespace": "ServiceTitan.ContactCenter.Interactions.Service.Data.ApiClients.Users",
+      "jsonLibrary": "SystemTextJson",
+      "useNullableReferenceTypes": true,
+      "output": "../src/ContactCenter.Interactions.Service/Data/ApiClients/Users/UserServiceClient.generated.cs",
+    }
+  }
+}

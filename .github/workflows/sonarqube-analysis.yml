@@ -1,0 +1,103 @@
+name: SonarQube analysis
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  sonarqube-scanner:
+    name: Run SonarQube analysis
+    runs-on: ubuntu-22.04
+    env:
+      ST__NuGetKey: ${{ secrets.ST_NUGET_PASSWORD }}
+      MongoDbConnectionString: "mongodb://localhost:27017/test?replicaSet=rs-localdev"
+      SONARQUBE_PROJECT_NAME: "Contact Center Interactions Service"
+      SONARQUBE_HOST: https://sonarqube.st.dev
+      SONARQUBE_PROJECT_KEY: contactcenter-interactions-service
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "microsoft"
+          java-version: "17"
+
+      # special mongodb image with atlas search and rs-localdev replica set
+      - name: Start MongoDB
+        run: |
+          docker run --name test-mongo --publish 27017:27017 --detach mongodb/mongodb-atlas-local:7.0
+          echo 'MongoDB started.'
+
+      - name: Setup Kafka
+        uses: 280780363/kafka-action@v1.0
+        with: 
+          kafka version: 3.9
+
+      - name: Install .NET tools
+        run: |
+          dotnet tool install --global servicetitan.platform.build.tool
+          dotnet tool install --global dotnet-sonarscanner
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          echo "$PWD/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Determine SonarQube branch
+        id: determine-branch
+        run: |
+          if [ "${{ github.event.pull_request }}" == "" ]
+          then
+              echo "BRANCH=/d:sonar.branch.name=${{ github.ref_name }}" >> $GITHUB_ENV
+          else
+              echo "BRANCH=/d:sonar.pullrequest.github.repository=${{ github.repository }} /d:sonar.pullrequest.key=${{ github.event.pull_request.number }} /d:sonar.pullrequest.branch=${{ github.head_ref }} /d:sonar.pullrequest.base=${{ github.base_ref }}" >> $GITHUB_ENV
+          fi
+
+      - name: Fetch target branch if pull request
+        run: |
+          if [ "${{ github.event.pull_request }}" != "" ]
+          then
+              git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
+          fi
+
+      - name: Restore NuGet packages
+        run: dotnet restore
+
+      - name: Start Sonar Scanner
+        run: |
+          dotnet-sonarscanner begin /k:"${{ env.SONARQUBE_PROJECT_KEY }}" \
+              /n:"${{ env.SONARQUBE_PROJECT_NAME }}" \
+              /d:sonar.host.url="${{ env.SONARQUBE_HOST }}" \
+              /d:sonar.token="${{ secrets.SONARQUBE_TOKEN }}" \
+              /d:sonar.scm.provider=git \
+              /d:sonar.exclusions="**/*generated*,**/Generated/**/*" \
+              /d:sonar.cpd.exclusions="**/*generated*,**/Generated/**/*" \
+              /d:sonar.coverage.exclusions="**/*generated*,**/Generated/**/*,**/.performance/**/*" \
+              /d:sonar.coverageReportPaths="artifacts/tests/coverage/SonarQube.xml" \
+              ${{ env.BRANCH }}
+
+      - name: Build solution
+        run: dotnet build
+
+      - name: Run tests
+        run: dotnet test --collect:"XPlat Code Coverage" --results-directory:"artifacts/tests/coverage"
+
+      - name: Convert test report to generic test coverage format
+        run: |
+          reportgenerator \
+              -reports:artifacts/tests/coverage/**/coverage.cobertura.xml \
+              -targetdir:artifacts/tests/coverage \
+              -reporttypes:SonarQube
+
+      - name: Finish Sonar Scanner
+        run: dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONARQUBE_TOKEN }}"

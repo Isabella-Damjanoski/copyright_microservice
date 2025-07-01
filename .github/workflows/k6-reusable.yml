@@ -1,0 +1,77 @@
+name: k6 Reusable
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Environment to run the tests against"
+        required: true
+        default: "qa"
+        type: "string"
+      workload:
+        description: "Type of workload to run"
+        required: true
+        default: "smoke"
+        type: "string"
+      concurrency:
+        description: "Number of concurrent virtual users"
+        required: false
+        type: "number"
+      iterations:
+        description: "Number of iterations per virtual user"
+        required: false
+        type: "number"
+      duration:
+        description: "Max duration of the test formatted as '1s'."
+        required: false
+        type: "string"
+      path:
+        description: "Path to the k6 script(s)"
+        required: true
+        default: "./.performance/src/tests/*.ts"
+        type: "string"
+
+jobs:
+  k6-load-test:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: Azure/login@v1
+        with:
+          tenant-id: fc1f6b68-bb68-429e-8230-5fe7bb899d52
+          subscription-id: ${{ vars.ENV_SUBSCRIPTIONID }}
+          client-id: ${{ secrets.ENV_DEPLOY_CLIENTID }}
+
+      - name: Pull configuration from Azure
+        run: az keyvault secret show --name contactcenter-interactions-service-k6 --vault-name ${{ vars.VAULT_NAME }} --query value -o tsv > .performance/k6.env.json
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+        with:
+          browser: true
+
+      - name: Run k6 Tests
+        uses: grafana/run-k6-action@v1
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          WORKLOAD: ${{ inputs.workload  }}
+          ITERATIONS: ${{ inputs.iterations }}
+          USERS: ${{ inputs.concurrency }}
+          DURATION: ${{ inputs.duration }}
+        with:
+          path: ${{ inputs.path }}
+          flags: --tag environment=${{ inputs.environment }} 
+      
+      - name: Adding markdown
+        if: always()
+        run: cat summary_*.md > $GITHUB_STEP_SUMMARY
+
+      - name: Upload k6 summary report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-summary-report-html
+          path: ./summary_*.html

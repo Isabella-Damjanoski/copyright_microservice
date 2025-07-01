@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-script": {
+      "version": "1.5.0",
+      "commands": [
+        "dotnet-script"
+      ],
+      "rollForward": false
+    },
+    "dotnet-reportgenerator-globaltool": {
+      "version": "5.3.7",
+      "commands": [
+        "reportgenerator"
+      ],
+      "rollForward": false
+    },
+    "dotnet-sonarscanner": {
+      "version": "7.0.0",
+      "commands": [
+        "dotnet-sonarscanner"
+      ],
+      "rollForward": false
+    },
+    "servicetitan.platform.build.tool": {
+      "version": "3.71.83",
+      "commands": [
+        "platform-build"
+      ],
+      "rollForward": false
+    },
+    "NSwag.ConsoleCore": {
+      "version": "14.2.0",
+      "commands": [
+        "nswag"
+      ],
+      "rollForward": false
+    },
+    "csharpier": {
+      "version": "0.29.1",
+      "commands": [
+        "dotnet-csharpier"
+      ],
+      "rollForward": false
+    }
+  }
+}

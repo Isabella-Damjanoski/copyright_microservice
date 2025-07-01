@@ -1,0 +1,24 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release-please:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ vars.ST_DEPLOY_APP_ID }}
+          private-key: ${{ secrets.ST_DEPLOY_APP_SECRET }}
+          owner: ${{ github.repository_owner }}
+      - id: release
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: simple
+          extra-files: '[{"type":"xml","path":"src/ContactCenter.Interactions.Service/ContactCenter.Interactions.Service.csproj","xpath":"//Project/PropertyGroup/Version"}]'
+          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"chore","section":"Chores","hidden":false},{"type":"revert","section":"Reverts","hidden":false}]'
+          token: ${{ steps.app-token.outputs.token }}

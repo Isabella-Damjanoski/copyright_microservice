@@ -1,0 +1,25 @@
+{
+  "runtime": "Net90",
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "https://telecom-pcs.wus2-01.telecom.devtest.telecom.srv.st.dev/swagger/v1/swagger.json"
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "className": "PcsClient",
+      "generateClientInterfaces": true,
+      "injectHttpClient": true,
+      "generatePrepareRequestAndProcessResponseAsAsyncMethods": false,
+      "generateNativeRecords": true,
+      "operationGenerationMode": "SingleClientFromPathSegments",
+      "namespace": "ServiceTitan.ContactCenter.Interactions.Service.Data.ApiClients.Pcs",
+      "jsonLibrary": "SystemTextJson",
+      "useNullableReferenceTypes": true,
+      "output": "../src/ContactCenter.Interactions.Service/Data/ApiClients/Pcs/PcsClient.generated.cs",
+      "excludedTypeNames": [
+        "ConversationTrait" // produces broken enum
+      ]
+    }
+  }
+}
