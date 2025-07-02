@@ -19,6 +19,11 @@ public class OrdersRepository(
 
     public async Task<Order> AddOrderAsync(Order order)
     {
+        if (string.IsNullOrWhiteSpace(order.CustomerName))
+            throw new ArgumentException("CustomerName is required.", nameof(order.CustomerName));
+        if (string.IsNullOrWhiteSpace(order.Email))
+            throw new ArgumentException("Email is required.", nameof(order.Email));
+
         order.CreatedAt = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
         order.UpdatedAt = order.CreatedAt;
         order.Status = 1;
