@@ -11,7 +11,10 @@ public static class OrdersMapper
             Id = order.Id,
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
-            Status = order.Status ?? default(int)
+            Status = order.Status ?? default(int),
+            CustomerName = order.CustomerName,
+            Email = order.Email,
+            Phone = order.Phone
         };
     }
 
