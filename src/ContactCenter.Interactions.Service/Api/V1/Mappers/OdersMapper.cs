@@ -23,7 +23,10 @@ public static class OrdersMapper
             Id = Guid.NewGuid().ToString(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
-            Status = null
+            Status = null,
+            CustomerName = orderCreateDto.CustomerName,
+            Email = orderCreateDto.Email,
+            Phone = orderCreateDto.Phone,
             // Map other properties from orderCreateDto as needed
         };
     }
