@@ -14,7 +14,7 @@ public record OrderOutputDto
 
     public required CustomerDto Customer { get; set; }
 
-    public required ItemDto Item { get; set; }
+    public required ItemDto[] Item { get; set; }
 }
 
 public record CustomerDto

@@ -7,7 +7,21 @@ public static class OrdersMapper
 {
     public static OrderOutputDto FromOrderToOrderOutputDto(Order order)
     {
-        return new OrderOutputDto
+        var listOfItems = new List<ItemDto>
+        {
+            {
+                new ItemDto
+                {
+                    ClothingType = order.ClothingType,
+                    Colour = order.Colour,
+                    Size = order.Size,
+                    Quantity = order.Quantity,
+                    Price = order.Price
+                }
+            }
+        };
+
+        var OrderOutput = new OrderOutputDto
         {
             Id = order.Id,
             CreatedAt = order.CreatedAt,
@@ -20,15 +34,10 @@ public static class OrdersMapper
                 Phone = order.Phone,
                 Email = order.Email
             },
-            Item = new ItemDto
-            {
-                ClothingType = order.ClothingType,
-                Colour = order.Colour,
-                Size = order.Size,
-                Quantity = order.Quantity,
-                Price = order.Price
-            }
+            Item = listOfItems.ToArray()
         };
+
+        return OrderOutput
     }
 
 
