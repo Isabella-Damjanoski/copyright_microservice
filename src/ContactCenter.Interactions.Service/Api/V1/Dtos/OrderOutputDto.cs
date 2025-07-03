@@ -10,14 +10,24 @@ public record OrderOutputDto
 
     public required int Status { get; set; }
 
-    public required string Name { get; set; }
-
     public required int ConfidenceScore { get; set; }
+
+    public required CustomerDTO Customer { get; set; }
+
+    public required ItemDTO Item { get; set; }
+}
+
+public record CustomerDTO
+{
+    public required string Name { get; set; }
 
     public string? Phone { get; set; }
 
     public required string Email { get; set; }
+}
 
+public record ItemDTO
+{
     public required string ClothingType { get; set; }
 
     public required string Colour { get; set; }
