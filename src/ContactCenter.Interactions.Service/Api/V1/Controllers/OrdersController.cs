@@ -28,7 +28,7 @@ public class OrdersController(
 
         var errors = new List<string>();
 
-        if (string.IsNullOrWhiteSpace(orderCreateDto.CustomerName))
+        if (string.IsNullOrWhiteSpace(orderCreateDto.Name))
         {
             errors.Add("CustomerName is required.");
         }

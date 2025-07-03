@@ -10,7 +10,7 @@ public record OrderOutputDto
 
     public required int Status { get; set; }
 
-        public required string Name { get; set; }
+    public required string Name { get; set; }
 
     public required int ConfidenceScore { get; set; }
 

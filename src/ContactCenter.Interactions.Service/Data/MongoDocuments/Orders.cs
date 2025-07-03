@@ -30,4 +30,14 @@ public record Order : IVersioned
     public string? Phone { get; set; }
 
     public required int ConfidenceScore { get; set; }
+
+    public required string ClothingType { get; set; }
+
+    public required string Colour { get; set; }
+
+    public required string Size { get; set; }
+
+    public required int Quantity { get; set; }
+
+    public required int Price { get; set; }
 }

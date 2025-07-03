@@ -14,10 +14,17 @@ public static class OrdersMapper
             UpdatedAt = order.UpdatedAt,
             Status = order.Status ?? default(int),
             Name = order.Name,
+            ConfidenceScore = order.ConfidenceScore,
             Email = order.Email,
-            Phone = order.Phone
+            Phone = order.Phone,
+            ClothingType = order.ClothingType,
+            Colour = order.Colour,
+            Size = order.Size,
+            Quantity = order.Quantity,
+            Price = order.Price
         };
     }
+
 
     public static Order FromOrderCreateDtoToOrder(OrderCreateDto orderCreateDto)
     {
@@ -33,13 +40,6 @@ public static class OrdersMapper
             UpdatedAt = DateTime.UtcNow,
             Status = null,
             // Map other properties from orderCreateDto as needed
-        };
-    }
-
-    public static Item FromOrderToCustomerData(OrderCreateDto orderCreateDto)
-    {
-        return new Item
-        {
             ClothingType = orderCreateDto.ClothingType,
             Colour = orderCreateDto.Colour,
             Size = orderCreateDto.Size,
