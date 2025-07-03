@@ -23,9 +23,11 @@ public record Order : IVersioned
 
     public required int? Status { get; set; }
 
-    public required string CustomerName { get; set; }
+    public required string Name { get; set; }
 
     public required string Email { get; set; }
 
     public string? Phone { get; set; }
+
+    public required int ConfidenceScore { get; set; }
 }

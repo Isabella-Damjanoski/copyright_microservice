@@ -1,3 +1,4 @@
+using DocumentFormat.OpenXml.Presentation;
 using ServiceTitan.ContactCenter.Interactions.Service.Api.V1.Dtos;
 using ServiceTitan.ContactCenter.Interactions.Service.Data.MongoDocuments;
 namespace ServiceTitan.ContactCenter.Interactions.Service.Api.V1.Mappers;
@@ -12,7 +13,7 @@ public static class OrdersMapper
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
             Status = order.Status ?? default(int),
-            CustomerName = order.CustomerName,
+            Name = order.Name,
             Email = order.Email,
             Phone = order.Phone
         };
@@ -24,13 +25,26 @@ public static class OrdersMapper
         {
             Version = Order.CurrentVersion,
             Id = Guid.NewGuid().ToString(),
+            Name = orderCreateDto.Name,
+            ConfidenceScore = orderCreateDto.ConfidenceScore,
+            Phone = orderCreateDto.Phone,
+            Email = orderCreateDto.Email,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Status = null,
-            CustomerName = orderCreateDto.CustomerName,
-            Email = orderCreateDto.Email,
-            Phone = orderCreateDto.Phone,
             // Map other properties from orderCreateDto as needed
+        };
+    }
+
+    public static Item FromOrderToCustomerData(OrderCreateDto orderCreateDto)
+    {
+        return new Item
+        {
+            ClothingType = orderCreateDto.ClothingType,
+            Colour = orderCreateDto.Colour,
+            Size = orderCreateDto.Size,
+            Quantity = orderCreateDto.Quantity,
+            Price = orderCreateDto.Price
         };
     }
 }
