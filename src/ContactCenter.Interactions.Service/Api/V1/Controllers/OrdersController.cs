@@ -21,6 +21,28 @@ public class OrdersController(
         [FromBody] OrderCreateDto orderCreateDto
     )
     {
+        if (orderCreateDto == null)
+        {
+            return BadRequest("OrderCreateDto cannot be null.");
+        }
+
+        var errors = new List<string>();
+
+        if (string.IsNullOrWhiteSpace(orderCreateDto.CustomerName))
+        {
+            errors.Add("CustomerName is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(orderCreateDto.Email))
+        {
+            errors.Add("Email is required.");
+        }
+
+        if (errors.Any())
+        {
+            return BadRequest(string.Join(" ", errors));
+        }
+
         var order = OrdersMapper.FromOrderCreateDtoToOrder(
             orderCreateDto
         );
