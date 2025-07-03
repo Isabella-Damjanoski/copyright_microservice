@@ -13,15 +13,21 @@ public static class OrdersMapper
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
             Status = order.Status ?? default(int),
-            Name = order.Name,
             ConfidenceScore = order.ConfidenceScore,
-            Email = order.Email,
-            Phone = order.Phone,
-            ClothingType = order.ClothingType,
-            Colour = order.Colour,
-            Size = order.Size,
-            Quantity = order.Quantity,
-            Price = order.Price
+            Customer = new CustomerDto
+            {
+                Name = order.Name,
+                Phone = order.Phone,
+                Email = order.Email
+            },
+            Item = new ItemDto
+            {
+                ClothingType = order.ClothingType,
+                Colour = order.Colour,
+                Size = order.Size,
+                Quantity = order.Quantity,
+                Price = order.Price
+            }
         };
     }
 

@@ -12,12 +12,12 @@ public record OrderOutputDto
 
     public required int ConfidenceScore { get; set; }
 
-    public required CustomerDTO Customer { get; set; }
+    public required CustomerDto Customer { get; set; }
 
-    public required ItemDTO Item { get; set; }
+    public required ItemDto Item { get; set; }
 }
 
-public record CustomerDTO
+public record CustomerDto
 {
     public required string Name { get; set; }
 
@@ -26,7 +26,7 @@ public record CustomerDTO
     public required string Email { get; set; }
 }
 
-public record ItemDTO
+public record ItemDto
 {
     public required string ClothingType { get; set; }
 
