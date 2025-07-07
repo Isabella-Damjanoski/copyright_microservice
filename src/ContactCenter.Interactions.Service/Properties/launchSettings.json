@@ -11,6 +11,18 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+    "ContactCenter.Interactions.Service": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SERVICE_BUS_CONNECTION_STRING": "Endpoint=sb://imageclassificationbus.servicebus.windows.net/;SharedAccessKeyName=imagepolicy;SharedAccessKey=zJVxaxLMu9cnYvGXZXNzYlvSI7ec6PIt1+ASbLXi41Q=;EntityPath=imageclassificationtopic",
+        "SERVICE_BUS_TOPIC_NAME": "imageclassificationtopic",
+        "SERVICE_BUS_SUBSCRIPTION_NAME": "imagesub"
+      }
     }
   }
 }
