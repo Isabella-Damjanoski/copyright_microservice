@@ -7,19 +7,22 @@ public static class OrdersMapper
 {
     public static OrderOutputDto FromOrderToOrderOutputDto(Order order)
     {
-        var listOfItems = new List<ItemDto>
+        var listOfItems = new List<ItemDto>();
+
+        if (order.Items != null)
         {
+            foreach (var item in order.Items)
             {
-                new ItemDto
+                listOfItems.Add(new ItemDto
                 {
-                    ClothingType = order.ClothingType,
-                    Colour = order.Colour,
-                    Size = order.Size,
-                    Quantity = order.Quantity,
-                    Price = order.Price
-                }
+                    ClothingType = item.ClothingType,
+                    Colour = item.Colour,
+                    Size = item.Size,
+                    Quantity = item.Quantity,
+                    Price = item.Price
+                });
             }
-        };
+        }
 
         var OrderOutput = new OrderOutputDto
         {
@@ -37,13 +40,12 @@ public static class OrdersMapper
             Item = listOfItems.ToArray()
         };
 
-        return OrderOutput
+        return OrderOutput;
     }
-
 
     public static Order FromOrderCreateDtoToOrder(OrderCreateDto orderCreateDto)
     {
-        return new Order
+        var order = new Order
         {
             Version = Order.CurrentVersion,
             Id = Guid.NewGuid().ToString(),
@@ -55,11 +57,23 @@ public static class OrdersMapper
             UpdatedAt = DateTime.UtcNow,
             Status = null,
             // Map other properties from orderCreateDto as needed
-            ClothingType = orderCreateDto.ClothingType,
-            Colour = orderCreateDto.Colour,
-            Size = orderCreateDto.Size,
-            Quantity = orderCreateDto.Quantity,
-            Price = orderCreateDto.Price
+            Items = new List<OrderItem>()
         };
+
+        if (orderCreateDto.Items != null)
+        {
+            foreach (var item in orderCreateDto.Items)
+            {
+                order.Items.Add(new OrderItem
+                {
+                    ClothingType = item.ClothingType,
+                    Colour = item.Colour,
+                    Size = item.Size,
+                    Quantity = item.Quantity,
+                    Price = item.Price
+                });
+            }
+        }
+        return order;
     }
 }

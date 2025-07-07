@@ -31,7 +31,12 @@ public record Order : IVersioned
 
     public required int ConfidenceScore { get; set; }
 
-    public required string ClothingType { get; set; }
+    public required List<OrderItem> Items { get; set; }
+}
+
+public class OrderItem
+{
+   public required string ClothingType { get; set; }
 
     public required string Colour { get; set; }
 
