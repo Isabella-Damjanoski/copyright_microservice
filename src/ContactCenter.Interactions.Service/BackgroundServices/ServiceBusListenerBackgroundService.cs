@@ -19,7 +19,7 @@ public class ServiceBusListenerBackgroundService : BackgroundService
         _serviceProvider = serviceProvider;
         _logger = logger;
         // Use correct environment variable names for Service Bus topic
-        _serviceBusConnectionString = ""; //Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING") ?? string.Empty;
+        _serviceBusConnectionString = "Endpoint=sb://imageclassificationbus.servicebus.windows.net/;SharedAccessKeyName=imagepolicy;SharedAccessKey=zJVxaxLMu9cnYvGXZXNzYlvSI7ec6PIt1+ASbLXi41Q=;EntityPath=imageclassificationtopic"; //Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING") ?? string.Empty;
         _topicName = Environment.GetEnvironmentVariable("SERVICE_BUS_TOPIC_NAME") ?? "imageclassificationtopic";
         // Set your subscription name here (must exist in Azure Service Bus)
         _subscriptionName = Environment.GetEnvironmentVariable("SERVICE_BUS_SUBSCRIPTION_NAME") ?? "imagesub";
