@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 
 namespace ContactCenter.Interactions.Service.BackgroundServices;
@@ -55,6 +56,27 @@ public class ServiceBusListenerBackgroundService : BackgroundService
         }
         var body = args.Message.Body.ToString();
         _logger.LogInformation($"Message Body: {body}");
+
+        // Parse probability and calculate confidencescore
+        try
+        {
+            using var doc = JsonDocument.Parse(body);
+            if (doc.RootElement.TryGetProperty("probability", out var probabilityElement))
+            {
+                double probability = probabilityElement.GetDouble();
+                double confidenceScore = Math.Round(probability);
+                _logger.LogInformation($"ConfidenceScore: {confidenceScore}");
+                // You can now use confidenceScore as needed
+            }
+            else
+            {
+                _logger.LogWarning("Probability property not found in message body.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to parse message body for probability.");
+        }
 
         await args.CompleteMessageAsync(args.Message);
     }
