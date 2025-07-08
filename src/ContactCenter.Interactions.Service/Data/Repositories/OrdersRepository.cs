@@ -31,30 +31,17 @@ public class OrdersRepository(
         return order;
     }
 
+
     public async Task<Order?> UpdateOrderAsync(Order order)
     {
-        order.UpdatedAt = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
         var filter = Builders<Order>.Filter.Eq(o => o.Id, order.Id);
         var update = Builders<Order>.Update
-            .Set(o => o.UpdatedAt, order.UpdatedAt)
-            .Set(o => o.Version, order.Version + 1);
-
+            .Set(o => o.Name, order.Name)
+            .Set(o => o.Email, order.Email)
+            .Set(o => o.ConfidenceScore, order.ConfidenceScore)
+            .Set(o => o.Status, order.Status)
+            .Set(o => o.UpdatedAt, SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc());
         var result = await _ordersCollection.FindOneAndUpdateAsync(filter, update);
         return result;
-    }
-
-    // Example: Filtering orders by ConfidenceScore when processing Service Bus messages
-
-    public async Task ProcessOrderFromServiceBusAsync(Order order)
-    {
-        // Ignore orders with ConfidenceScore below 50
-        if (order.ConfidenceScore < 50)
-        {
-            // Optionally log or skip
-            return;
-        }
-
-        // Process or show orders with ConfidenceScore 50 or above
-        await AddOrderAsync(order); // or your processing logic
     }
 }
