@@ -42,4 +42,19 @@ public class OrdersRepository(
         var result = await _ordersCollection.FindOneAndUpdateAsync(filter, update);
         return result;
     }
+
+    // Example: Filtering orders by ConfidenceScore when processing Service Bus messages
+
+    public async Task ProcessOrderFromServiceBusAsync(Order order)
+    {
+        // Ignore orders with ConfidenceScore below 50
+        if (order.ConfidenceScore < 50)
+        {
+            // Optionally log or skip
+            return;
+        }
+
+        // Process or show orders with ConfidenceScore 50 or above
+        await AddOrderAsync(order); // or your processing logic
+    }
 }
