@@ -64,7 +64,7 @@ public class ServiceBusListenerBackgroundService : BackgroundService
             if (doc.RootElement.TryGetProperty("probability", out var probabilityElement))
             {
                 double probability = probabilityElement.GetDouble();
-                double confidenceScore = Math.Round(probability);
+                double confidenceScore = Math.Round(probability*100);
                 _logger.LogInformation($"ConfidenceScore: {confidenceScore}");
                 // You can now use confidenceScore as needed
             }
