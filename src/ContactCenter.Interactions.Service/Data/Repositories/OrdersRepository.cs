@@ -38,9 +38,9 @@ public class OrdersRepository(
         var update = Builders<Order>.Update
             .Set(o => o.Name, order.Name)
             .Set(o => o.Email, order.Email)
-            .Set(o => o.ConfidenceScore, order.ConfidenceScore)
             .Set(o => o.Status, order.Status)
-            .Set(o => o.UpdatedAt, SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc());
+            .Set(o => o.UpdatedAt, SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc())
+            .Set(o => o.ConfidenceScore, order.ConfidenceScore); // Update ConfidenceScore from the provided order
         var result = await _ordersCollection.FindOneAndUpdateAsync(filter, update);
         return result;
     }

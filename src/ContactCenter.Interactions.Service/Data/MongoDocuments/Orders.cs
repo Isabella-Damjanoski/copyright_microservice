@@ -29,7 +29,7 @@ public record Order : IVersioned
 
     public string? Phone { get; set; }
 
-    public required int ConfidenceScore { get; set; }
+    public required string ConfidenceScore { get; set; }
 
     public required List<OrderItem> Items { get; set; }
 }

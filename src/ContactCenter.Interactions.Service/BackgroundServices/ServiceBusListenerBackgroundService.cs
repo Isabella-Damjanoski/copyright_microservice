@@ -57,25 +57,43 @@ public class ServiceBusListenerBackgroundService : BackgroundService
         var body = args.Message.Body.ToString();
         _logger.LogInformation($"Message Body: {body}");
 
-        // Parse probability and calculate confidencescore
+        // Parse probability, calculate confidencescore, and extract id from blob_name
         try
         {
             using var doc = JsonDocument.Parse(body);
+            string? id = null;
+            string? confidenceScore = null;
+            if (doc.RootElement.TryGetProperty("blob_name", out var blobNameElement))
+            {
+                var blobName = blobNameElement.GetString();
+                if (!string.IsNullOrEmpty(blobName) && blobName.Contains("/"))
+                {
+                    var fileName = blobName[(blobName.LastIndexOf('/') + 1)..];
+                    if (fileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase))
+                    {
+                        id = fileName[..fileName.LastIndexOf(".jpg", StringComparison.OrdinalIgnoreCase)];
+                    }
+                }
+            }
+            if (!string.IsNullOrEmpty(id))
+            {
+                _logger.LogInformation($"Order Id extracted from blob_name: {id}");
+            }
             if (doc.RootElement.TryGetProperty("probability", out var probabilityElement))
             {
                 double probability = probabilityElement.GetDouble();
-                double confidenceScore = Math.Round(probability*100);
+                confidenceScore = $"{Math.Round(probability*100, 2)}%";
                 _logger.LogInformation($"ConfidenceScore: {confidenceScore}");
-                // You can now use confidenceScore as needed
             }
             else
             {
                 _logger.LogWarning("Probability property not found in message body.");
             }
+            // You can now use 'id' and 'confidenceScore' as needed
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to parse message body for probability.");
+            _logger.LogError(ex, "Failed to parse message body for probability or blob_name.");
         }
 
         await args.CompleteMessageAsync(args.Message);
