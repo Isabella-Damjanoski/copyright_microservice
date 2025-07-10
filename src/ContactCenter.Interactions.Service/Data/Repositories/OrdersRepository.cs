@@ -19,6 +19,11 @@ public class OrdersRepository(
 
     public async Task<Order> AddOrderAsync(Order order)
     {
+        if (string.IsNullOrWhiteSpace(order.Name))
+            throw new ArgumentException("CustomerName is required.", nameof(order.Name));
+        if (string.IsNullOrWhiteSpace(order.Email))
+            throw new ArgumentException("Email is required.", nameof(order.Email));
+
         order.CreatedAt = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
         order.UpdatedAt = order.CreatedAt;
         order.Status = 1;
@@ -33,6 +38,17 @@ public class OrdersRepository(
         var update = Builders<Order>.Update
             .Set(o => o.UpdatedAt, order.UpdatedAt)
             .Set(o => o.Version, order.Version + 1);
+
+        var result = await _ordersCollection.FindOneAndUpdateAsync(filter, update);
+        return result;
+    }
+
+    public async Task<Order?> UpdateConfidenceScoreAsync(string id, string confidenceScore)
+    {
+        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+        var update = Builders<Order>.Update
+            .Set(o => o.ConfidenceScore, confidenceScore)
+            .Set(o => o.UpdatedAt, SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc());
 
         var result = await _ordersCollection.FindOneAndUpdateAsync(filter, update);
         return result;
