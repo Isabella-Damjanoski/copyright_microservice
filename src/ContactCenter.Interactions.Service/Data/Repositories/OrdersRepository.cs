@@ -33,12 +33,12 @@ public class OrdersRepository(
 
     public async Task<Order?> UpdateOrderAsync(Order order)
     {
+        order.UpdatedAt = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
         var filter = Builders<Order>.Filter.Eq(o => o.Id, order.Id);
         var update = Builders<Order>.Update
-            .Set(o => o.Name, order.Name)
-            .Set(o => o.Email, order.Email)
-            .Set(o => o.Status, order.Status)
-            .Set(o => o.UpdatedAt, SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc());
+            .Set(o => o.UpdatedAt, order.UpdatedAt)
+            .Set(o => o.Version, order.Version + 1);
+
         var result = await _ordersCollection.FindOneAndUpdateAsync(filter, update);
         return result;
     }
