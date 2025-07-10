@@ -31,7 +31,6 @@ public class OrdersRepository(
         return order;
     }
 
-
     public async Task<Order?> UpdateOrderAsync(Order order)
     {
         var filter = Builders<Order>.Filter.Eq(o => o.Id, order.Id);
@@ -39,8 +38,18 @@ public class OrdersRepository(
             .Set(o => o.Name, order.Name)
             .Set(o => o.Email, order.Email)
             .Set(o => o.Status, order.Status)
-            .Set(o => o.UpdatedAt, SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc())
-            .Set(o => o.ConfidenceScore, order.ConfidenceScore); // Update ConfidenceScore from the provided order
+            .Set(o => o.UpdatedAt, SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc());
+        var result = await _ordersCollection.FindOneAndUpdateAsync(filter, update);
+        return result;
+    }
+
+    public async Task<Order?> UpdateConfidenceScoreAsync(string id, string confidenceScore)
+    {
+        var filter = Builders<Order>.Filter.Eq(o => o.Id, id);
+        var update = Builders<Order>.Update
+            .Set(o => o.ConfidenceScore, confidenceScore)
+            .Set(o => o.UpdatedAt, SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc());
+
         var result = await _ordersCollection.FindOneAndUpdateAsync(filter, update);
         return result;
     }
