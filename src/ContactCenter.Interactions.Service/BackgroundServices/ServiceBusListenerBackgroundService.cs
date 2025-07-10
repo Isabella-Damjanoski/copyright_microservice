@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
+using ServiceTitan.ContactCenter.Interactions.Service.Data;
 
 namespace ContactCenter.Interactions.Service.BackgroundServices;
 
@@ -11,13 +12,17 @@ public class ServiceBusListenerBackgroundService : BackgroundService
     private readonly string _subscriptionName;
     private ServiceBusProcessor? _processor;
 
+    private IDataService _dataService;
+
     public ServiceBusListenerBackgroundService(
+        IDataService dataService,
         ILogger<ServiceBusListenerBackgroundService> logger)
     {
         _logger = logger;
         _serviceBusConnectionString = "Endpoint=sb://imageclassificationbus.servicebus.windows.net/;SharedAccessKeyName=imagepolicy;SharedAccessKey=zJVxaxLMu9cnYvGXZXNzYlvSI7ec6PIt1+ASbLXi41Q=;EntityPath=imageclassificationtopic";
         _topicName = Environment.GetEnvironmentVariable("SERVICE_BUS_TOPIC_NAME") ?? "imageclassificationtopic";
         _subscriptionName = Environment.GetEnvironmentVariable("SERVICE_BUS_SUBSCRIPTION_NAME") ?? "imagesub";
+        _dataService = dataService;
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -69,9 +74,9 @@ public class ServiceBusListenerBackgroundService : BackgroundService
                 if (!string.IsNullOrEmpty(blobName) && blobName.Contains("/"))
                 {
                     var fileName = blobName[(blobName.LastIndexOf('/') + 1)..];
-                    if (fileName.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase))
+                    if (fileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
                     {
-                        id = fileName[..fileName.LastIndexOf(".jpg", StringComparison.OrdinalIgnoreCase)];
+                        id = fileName[..fileName.LastIndexOf(".png", StringComparison.OrdinalIgnoreCase)];
                     }
                 }
             }
@@ -82,13 +87,21 @@ public class ServiceBusListenerBackgroundService : BackgroundService
             if (doc.RootElement.TryGetProperty("probability", out var probabilityElement))
             {
                 double probability = probabilityElement.GetDouble();
-                confidenceScore = $"{Math.Round(probability*100, 2)}%";
+                confidenceScore = $"{Math.Round(probability * 100, 2)}%";
                 _logger.LogInformation($"ConfidenceScore: {confidenceScore}");
             }
             else
             {
                 _logger.LogWarning("Probability property not found in message body.");
             }
+
+            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(confidenceScore))
+            {
+                _logger.LogWarning("Either id or confidenceScore is null or empty. Skipping update.");
+                await args.CompleteMessageAsync(args.Message);
+                return;
+            }
+            await _dataService.UpdateConfidenceScoreAsync(id, confidenceScore);
             // You can now use 'id' and 'confidenceScore' as needed
         }
         catch (Exception ex)

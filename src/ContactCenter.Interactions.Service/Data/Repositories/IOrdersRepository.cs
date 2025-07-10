@@ -9,4 +9,6 @@ public interface IOrdersRepository
     public Task<Order> AddOrderAsync(Order order);
 
     public Task<Order?> UpdateOrderAsync(Order order);
-}
+
+    public Task<Order?> UpdateConfidenceScoreAsync(string id, string confidenceScore);
+};

@@ -15,7 +15,7 @@ public record Order : IVersioned
     [UsedImplicitly]
     private ObjectId ObjectId { get; set; }
 
-    public string Id { get; set; }
+    public string Id { get; init; } = $"{Guid.NewGuid()}";
 
     public required DateTime CreatedAt { get; set; }
 
