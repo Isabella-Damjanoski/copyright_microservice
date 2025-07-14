@@ -1,3 +1,5 @@
+using MongoDB.Driver;
+using ServiceTitan.ContactCenter.Interactions.Service.Data.Models;
 using ServiceTitan.ContactCenter.Interactions.Service.Data.MongoDocuments;
 using ServiceTitan.ContactCenter.Interactions.Service.Data.Repositories;
 
@@ -27,5 +29,10 @@ public class DataService(
     public async Task<Order?> UpdateConfidenceScoreAsync(string id, string confidenceScore)
     {
         return await _orderRepository.UpdateConfidenceScoreAsync(id, confidenceScore);
+    }
+
+    public IMongoCollection<Order> GetOrdersCollection()
+    {
+        return _orderRepository.GetOrdersCollection();
     }
 }
