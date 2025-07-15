@@ -1,4 +1,3 @@
-using MongoDB.Driver;
 using ServiceTitan.ContactCenter.Interactions.Service.Data.MongoDocuments;
 
 namespace ServiceTitan.ContactCenter.Interactions.Service.Data.Repositories;
@@ -12,5 +11,6 @@ public interface IOrdersRepository
     public Task<Order?> UpdateOrderAsync(Order order);
 
     public Task<Order?> UpdateConfidenceScoreAsync(string id, string confidenceScore);
-    IMongoCollection<Order> GetOrdersCollection();
+
+    public Task<List<Order>> GetOrdersAsync();
 };

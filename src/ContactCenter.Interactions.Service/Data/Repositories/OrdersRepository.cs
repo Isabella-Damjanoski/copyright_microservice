@@ -53,4 +53,9 @@ public class OrdersRepository(
         var result = await _ordersCollection.FindOneAndUpdateAsync(filter, update);
         return result;
     }
+
+    public Task<List<Order>> GetOrdersAsync()
+    {
+        return _ordersCollection.AsQueryable().ToListAsync();
+    }
 }

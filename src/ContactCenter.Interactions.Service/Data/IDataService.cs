@@ -12,5 +12,6 @@ public interface IDataService
     public Task<Order?> UpdateOrderAsync(Order order);
 
     public Task<Order?> UpdateConfidenceScoreAsync(string id, string confidenceScore);
-    public IMongoCollection<Order> GetOrdersCollection();
+
+    public Task<List<Order>> GetOrdersAsync();
 };

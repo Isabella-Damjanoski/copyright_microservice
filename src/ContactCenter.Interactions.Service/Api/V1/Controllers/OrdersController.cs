@@ -16,8 +16,6 @@ public class OrdersController(
     IDataService dataService
 ) : ControllerBase
 {
-    private readonly IMongoCollection<Order> _ordersCollection = dataService.GetOrdersCollection();
-
     [HttpPost]
     [Route("")]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -111,13 +109,15 @@ public class OrdersController(
             filter &= builder.Eq("CreatedAt", createdAt.Value);
 
         var skip = (page - 1) * pageSize;
-        var totalOrders = await _ordersCollection.CountDocumentsAsync(filter);
 
-        var orders = await _ordersCollection
-            .Find(filter)
-            .Skip(skip)
-            .Limit(pageSize)
-            .ToListAsync();
+        var orders = await dataService.GetOrdersAsync();
+        // .Find(filter)
+        // .Skip(skip)
+        // .Limit(pageSize)
+        // .ToListAsync();
+
+        var totalOrders = orders.Count;
+
 
         var orderDtos = orders.Select(o => new OrderOutputDto
         {

@@ -1,4 +1,3 @@
-using DocumentFormat.OpenXml.Presentation;
 using ServiceTitan.ContactCenter.Interactions.Service.Api.V1.Dtos;
 using ServiceTitan.ContactCenter.Interactions.Service.Data.MongoDocuments;
 namespace ServiceTitan.ContactCenter.Interactions.Service.Api.V1.Mappers;
@@ -29,7 +28,7 @@ public static class OrdersMapper
             Id = order.Id,
             CreatedAt = order.CreatedAt,
             UpdatedAt = order.UpdatedAt,
-            Status = order.Status ?? default(int),
+            Status = order.Status,
             ConfidenceScore = order.ConfidenceScore,
             Customer = new CustomerDto
             {
@@ -55,7 +54,7 @@ public static class OrdersMapper
             Email = orderCreateDto.Email,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
-            Status = null,
+            Status = 1,
             // Map other properties from orderCreateDto as needed
             Items = new List<OrderItem>()
         };
