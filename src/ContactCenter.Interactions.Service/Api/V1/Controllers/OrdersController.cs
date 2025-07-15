@@ -78,48 +78,16 @@ public class OrdersController(
 
     [HttpGet("search")]
     public async Task<IActionResult> SearchOrdersAsync(
-        string? name = null,
-        string? orderId = null,
-        string? phone = null,
-        string? email = null,
-        int? status = null,
-        DateTime? createdAt = null,
         int page = 1,
         int pageSize = 8)
     {
-        var builder = Builders<Order>.Filter;
-        var filter = builder.Empty;
 
-        if (!string.IsNullOrWhiteSpace(name))
-            filter &= builder.Eq("Customer.Name", name);
+        var allOrders = await dataService.GetOrdersAsync();
+        var totalOrders = allOrders.Count;
+        var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+        var pagedOrders = allOrders.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-        if (!string.IsNullOrWhiteSpace(orderId))
-            filter &= builder.Eq("Id", orderId);
-
-        if (!string.IsNullOrWhiteSpace(phone))
-            filter &= builder.Eq("Customer.Phone", phone);
-
-        if (!string.IsNullOrWhiteSpace(email))
-            filter &= builder.Eq("Customer.Email", email);
-
-        if (status.HasValue)
-            filter &= builder.Eq("Status", status.Value);
-
-        if (createdAt.HasValue)
-            filter &= builder.Eq("CreatedAt", createdAt.Value);
-
-        var skip = (page - 1) * pageSize;
-
-        var orders = await dataService.GetOrdersAsync();
-        // .Find(filter)
-        // .Skip(skip)
-        // .Limit(pageSize)
-        // .ToListAsync();
-
-        var totalOrders = orders.Count;
-
-
-        var orderDtos = orders.Select(o => new OrderOutputDto
+        var orderDtos = pagedOrders.Select(o => new OrderOutputDto
         {
             Id = o.Id,
             CreatedAt = o.CreatedAt,
@@ -141,8 +109,6 @@ public class OrdersController(
                 Price = i.Price
             }).ToArray()
         }).ToArray();
-
-        var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
 
         var pageDto = new PageDto
         {
