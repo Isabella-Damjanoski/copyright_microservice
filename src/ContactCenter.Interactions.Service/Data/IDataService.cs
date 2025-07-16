@@ -14,4 +14,6 @@ public interface IDataService
     public Task<Order?> UpdateConfidenceScoreAsync(string id, string confidenceScore);
 
     public Task<List<Order>> GetOrdersAsync();
+
+    //public Task<Order?> UpdateOrderStatusAsync(string id, OrderStatus status);
 };

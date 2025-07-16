@@ -89,7 +89,10 @@ public class OrdersController(
         int? quantity = null,
         int? price = null,
         int page = 1,
-        int pageSize = 8)
+        int pageSize = 8,
+        string? sortBy = null,         // "confidenceScore" or "createdAt"
+        string? sortOrder = "desc"     // "asc" or "desc"
+    )
     {
         var allOrders = await dataService.GetOrdersAsync();
 
@@ -104,11 +107,28 @@ public class OrdersController(
             (size == null || o.Items.Any(i => i.Size == size)) &&
             (!quantity.HasValue || o.Items.Any(i => i.Quantity == quantity.Value)) &&
             (!price.HasValue || o.Items.Any(i => i.Price == price.Value))
-        ).ToList();
+        );
 
-        var totalOrders = filteredOrders.Count;
+        // Sorting
+        if (sortBy == "confidenceScore")
+        {
+            if (sortOrder == "asc")
+                filteredOrders = filteredOrders.OrderBy(o => ParseConfidenceScore(o.ConfidenceScore));
+            else
+                filteredOrders = filteredOrders.OrderByDescending(o => ParseConfidenceScore(o.ConfidenceScore));
+        }
+        else if (sortBy == "createdAt")
+        {
+            if (sortOrder == "asc")
+                filteredOrders = filteredOrders.OrderBy(o => o.CreatedAt);
+            else
+                filteredOrders = filteredOrders.OrderByDescending(o => o.CreatedAt);
+        }
+
+        var filteredList = filteredOrders.ToList();
+        var totalOrders = filteredList.Count;
         var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
-        var pagedOrders = filteredOrders.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        var pagedOrders = filteredList.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
         var orderDtos = pagedOrders.Select(o => new OrderOutputDto
         {
@@ -138,10 +158,29 @@ public class OrdersController(
             PageNumber = page,
             TotalPages = totalPages,
             PageSize = pageSize,
-            TotalCount = (int)totalOrders,
+            TotalCount = totalOrders,
             Items = orderDtos
         };
 
         return Ok(pageDto);
+    }
+
+    // [HttpPatch("{id}/status")]
+    // public async Task<IActionResult> UpdateOrderStatus(string id, [FromBody] int status)
+    // {
+    //     var updatedOrder = await dataService.UpdateOrderStatusAsync(id, (OrderStatus)status);
+    //     if (updatedOrder == null)
+    //         return NotFound();
+
+    //     return Ok(updatedOrder);
+    // }
+
+    // Helper to parse "98.5%" to 98.5
+    private static double ParseConfidenceScore(string score)
+    {
+        if (string.IsNullOrWhiteSpace(score)) return 0;
+        if (score.EndsWith("%")) score = score.TrimEnd('%');
+        double.TryParse(score, out var value);
+        return value;
     }
 }

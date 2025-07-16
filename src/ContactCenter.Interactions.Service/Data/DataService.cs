@@ -33,4 +33,9 @@ public class DataService(
     {
         return _orderRepository.GetOrdersAsync();
     }
+
+    // public async Task<Order?> UpdateOrderStatusAsync(string id, OrderStatus status)
+    // {
+    //     return await _orderRepository.UpdateOrderStatusAsync(id, status);
+    // }
 }

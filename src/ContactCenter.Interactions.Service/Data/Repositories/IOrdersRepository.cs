@@ -1,5 +1,6 @@
 using ServiceTitan.ContactCenter.Interactions.Service.Data.MongoDocuments;
 
+
 namespace ServiceTitan.ContactCenter.Interactions.Service.Data.Repositories;
 
 public interface IOrdersRepository
@@ -13,4 +14,6 @@ public interface IOrdersRepository
     public Task<Order?> UpdateConfidenceScoreAsync(string id, string confidenceScore);
 
     public Task<List<Order>> GetOrdersAsync();
+
+    //  public async Task<Order?> UpdateOrderStatusAsync(string id, OrderStatus status)
 };
