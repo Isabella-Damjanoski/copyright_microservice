@@ -58,4 +58,9 @@ public class OrdersRepository(
     {
         return _ordersCollection.AsQueryable().ToListAsync();
     }
+
+    public Task ClearOrdersAsync()
+    {
+        return _ordersCollection.DeleteManyAsync(Builders<Order>.Filter.Empty);
+    }
 }

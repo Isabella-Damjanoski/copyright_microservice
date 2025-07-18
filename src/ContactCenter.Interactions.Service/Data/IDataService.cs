@@ -5,6 +5,8 @@ namespace ServiceTitan.ContactCenter.Interactions.Service.Data;
 
 public interface IDataService
 {
+    public Task ClearOrdersAsync();
+
     public Task<Order?> GetOrderAsync(string id);
 
     public Task<Order> AddOrderAsync(Order order);

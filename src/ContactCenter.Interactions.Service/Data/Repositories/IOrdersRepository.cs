@@ -5,6 +5,8 @@ namespace ServiceTitan.ContactCenter.Interactions.Service.Data.Repositories;
 
 public interface IOrdersRepository
 {
+    public Task ClearOrdersAsync();
+
     public Task<Order?> GetOrderAsync(string id);
 
     public Task<Order> AddOrderAsync(Order order);

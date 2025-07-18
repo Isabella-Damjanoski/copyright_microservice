@@ -2,9 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using ServiceTitan.ContactCenter.Interactions.Service.Api.V1.Dtos;
 using ServiceTitan.ContactCenter.Interactions.Service.Api.V1.Mappers;
 using ServiceTitan.ContactCenter.Interactions.Service.Data;
-using ServiceTitan.ContactCenter.Interactions.Service.Data.Models;
 using MongoDB.Driver;
-using ServiceTitan.ContactCenter.Interactions.Service.Data.MongoDocuments;
 
 namespace ContactCenter.Interactions.Service.Api.V1.Controllers;
 
@@ -178,8 +176,10 @@ public class OrdersController(
     // Helper to parse "98.5%" to 98.5
     private static double ParseConfidenceScore(string score)
     {
-        if (string.IsNullOrWhiteSpace(score)) return 0;
-        if (score.EndsWith("%")) score = score.TrimEnd('%');
+        if (string.IsNullOrWhiteSpace(score))
+            return 0;
+        if (score.EndsWith("%"))
+            score = score.TrimEnd('%');
         double.TryParse(score, out var value);
         return value;
     }
