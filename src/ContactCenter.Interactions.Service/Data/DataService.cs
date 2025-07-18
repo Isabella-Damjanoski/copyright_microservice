@@ -23,4 +23,19 @@ public class DataService(
     {
         return await _orderRepository.UpdateOrderAsync(order);
     }
+
+    public async Task<Order?> UpdateConfidenceScoreAsync(string id, string confidenceScore)
+    {
+        return await _orderRepository.UpdateConfidenceScoreAsync(id, confidenceScore);
+    }
+
+    public Task<List<Order>> GetOrdersAsync()
+    {
+        return _orderRepository.GetOrdersAsync();
+    }
+
+    public Task ClearOrdersAsync()
+    {
+        return _orderRepository.ClearOrdersAsync();
+    }
 }

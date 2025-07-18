@@ -1,8 +1,10 @@
+using ContactCenter.Interactions.Service.BackgroundServices;
 using ServiceTitan.ContactCenter.Interactions.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.ConfigureConfiguration(args);
 builder.ConfigureServices();
+builder.Services.AddHostedService<ServiceBusListenerBackgroundService>();
 
 var app = builder.Build();
 app.ConfigureApplicationMiddleware();

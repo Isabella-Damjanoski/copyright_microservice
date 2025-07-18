@@ -17,7 +17,6 @@
     <Using Include="System.Net" />
     <Using Include="Xunit" />
     <Using Include="Xunit.Abstractions" />
-    <Using Remove="Microsoft.Extensions.Logging" />
   </ItemGroup>
 
   <ItemGroup>
